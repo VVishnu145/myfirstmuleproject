@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a8a8a4db-14f0-4514-9b22-ef1378ce57ce" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="nonstatic_methodFlow" doc:id="8783a20c-4ece-40d0-83ef-b5700c639d02" >
+		<http:listener doc:name="Listener" doc:id="a49a2a89-f250-44fe-957b-6aa5ef1fee9d" config-ref="HTTP_Listener_config" path="nonstatic"/>
+		<java:new doc:name="New" doc:id="1de6f8d4-1a8d-47ac-8bc5-6d604ef90de2" class="com.way2learnonline.StockQuote" constructor="StockQuote()" target="sq"/>
+		<java:invoke doc:name="Invoke" doc:id="bcd13d32-6ef0-482d-add7-73b813b56dcf" instance="#[vars.sq]" class="com.way2learnonline.StockQuote" method="getStockPrice(java.lang.String)">
+			<java:args ><![CDATA[#[output application/java
+---
+{
+	stockSymbol: attributes.queryParams.stock as String
+}]]]></java:args>
+		</java:invoke>
+	</flow>
+	<flow name="static_methodFlow1" doc:id="ec300f38-19ca-42b1-af7d-a11e2b03146d" >
+		<http:listener doc:name="Listener" doc:id="73455ea1-52d9-4890-a416-5d9a6b916621" config-ref="HTTP_Listener_config" path="static"/>
+		<java:invoke-static doc:name="Invoke static" doc:id="6a58ab2c-ee77-4555-9a99-0a1a907b1af8" class="com.way2learnonline.StockQuote" method="sayHello(java.lang.String,java.lang.String)">
+			<java:args ><![CDATA[#[output application/java
+---
+{
+	name: attributes.queryParams.uname as String,
+	city: attributes.queryParams.ucity as String
+}]]]></java:args>
+		</java:invoke-static>
+	</flow>
+</mule>
